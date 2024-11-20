@@ -1,0 +1,44 @@
+Set 1:
+train_transforms:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ["image", "label"]
+      - _target_: monai.transforms.EnsureChannelFirstd
+        keys: ["image", "label"]
+      - _target_: monai.transforms.ResizeWithPadOrCropd
+        keys: ["image", "label"]
+        spatial_size:
+          - 512
+          - 512
+          - 288
+      - _target_: data.vrheart_utils.transforms.ConvertToMultiChannelBasedOnClassesd
+        keys: "label"
+      - _target_: monai.transforms.Orientationd
+        keys: ["image", "label"]
+        axcodes: "RAS"
+      - _target_: monai.transforms.AdjustContrastd
+        keys: "image"
+        gamma: 1.45
+      - _target_: monai.transforms.RandGaussianNoised
+        keys: "image"
+        prob: 0.8
+        mean: 0.0
+        std: 0.5
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: "image"
+        nonzero: true
+        channel_wise: true
+      - _target_: monai.transforms.RandStdShiftIntensityd
+        keys: "image"
+        factors: 0.5
+      - _target_: monai.transforms.Rand3DElasticd
+        keys: ["image", "label"]
+        sigma_range:
+          - 5.0
+          - 8.0
+        magnitude_range:
+          - 100
+          - 200
+        prob: 0.7
+        padding_mode: "reflection"
